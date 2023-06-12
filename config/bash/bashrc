@@ -1,7 +1,7 @@
 # Turn off message for new shells just in case...
 mesg n
 
-export XDG_CONFIG_HOME="~/.config"
+export XDG_CONFIG_HOME=~/".config"
 export EDITOR="$(which vim)"
 export VISUAL="$(which vim)"
 export PAGER="$(which less)"

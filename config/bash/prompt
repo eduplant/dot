@@ -32,7 +32,7 @@ generateStatusIdentity()
 
 	local formatString='\001%s\002%s\001%s\002'
 
-	local identity="$(id --user --name)"
+	local identity="$(id -u -n)"
 
 	if [[ ${identity} == ${ERICPREF_LOCALUSER} ]]
 	then
@@ -85,7 +85,12 @@ generatePromptString()
 {
 	# Use argument to generate PS1, PS2, etc
 	local promptString="$1"
-	local hostname="$(hostname | tr --delete '\n')"
+	if [ "${ERICPREF_HOSTNAME}" ]
+	then
+		local hostname="${ERICPREF_HOSTNAME}"
+	else
+		local hostname="$(hostname -s | tr -d '\n')"
+	fi
 	local basedir="$(basename $(pwd))"
 
 	local formatString='%s %s%s %s» '
