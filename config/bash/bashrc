@@ -1,0 +1,54 @@
+# Turn off message for new shells just in case...
+mesg n
+
+export XDG_CONFIG_HOME="~/.config"
+export EDITOR="$(which vim)"
+export VISUAL="$(which vim)"
+export PAGER="$(which less)"
+export TZ='America/Los_Angeles'
+export LC_TIME='en_US.UTF-8'
+
+# Eric preference definitions
+export ERICPREF_COMMON_BASHRC="${XDG_CONFIG_HOME}"'/bash/common_bashrc'
+export ERICPREF_LOCAL_OVERRIDES="${XDG_CONFIG_HOME}"'/bash/override_bashrc'
+export ERICPREF_PROMPT="${XDG_CONFIG_HOME}"'/bash/prompt'
+export ERICPREF_LOCALUSER='eduplant'
+export ERICPREF_MAIN_TMUX_SESSION='main'
+
+# Custom sudo-related aliases
+alias sudo='sudo --preserve-env=ERICPREF_COMMON_BASHRC'
+alias enable='sudo true'
+alias disable='sudo -k'
+
+# Some of the bashrc is unique to my user profile and some of it is common and
+# should be imported by other users (example: root).
+if [ -f "${ERICPREF_COMMON_BASHRC}" ]
+then
+	source "${ERICPREF_COMMON_BASHRC}"
+fi
+
+# In the event that some preferences need to be overridden or suppressed on this
+# specific machine, redefine them in the appropriate file.
+if [ -f "${ERICPREF_LOCAL_OVERRIDES}" ]
+then
+	source "${ERICPREF_LOCAL_OVERRIDES}"
+fi
+
+# Set the prompt.
+if [ -f "${ERICPREF_PROMPT}" ]
+then
+	source "${ERICPREF_PROMPT}"
+fi
+
+# Try and reattach the main tmux session on each new interactive shell
+if $(tmux has-session -t "${ERICPREF_MAIN_TMUX_SESSION}" &>/dev/null)
+then
+	# Check to make sure this shell isn't being spawned *inside* tmux
+	if [ ! -n "${TMUX}" ]
+	then
+		tmux attach -t "${ERICPREF_MAIN_TMUX_SESSION}"
+	fi
+else
+	printf 'No default tmux session (%s) found, continuing to shell...\n' \
+		"${ERICPREF_MAIN_TMUX_SESSION}"
+fi

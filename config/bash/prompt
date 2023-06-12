@@ -1,0 +1,113 @@
+#!/usr/bin/env bash
+
+generateStatusNetwork()
+{
+	local colorLocal="$(tput sgr0)"
+	local colorNetwork="$(tput setaf 14)"
+	local colorReset="$(tput sgr0)"
+
+	local characterLocal='•'
+	local characterNetwork='⇄'
+
+	local formatString='\001%s\002%s\001%s\002'
+
+	if [ "${SSH_TTY}" ]
+	then
+		printf "${formatString}" \
+			"${colorNetwork}" \
+			"${characterNetwork}" \
+			"${colorReset}"
+	else
+		printf "${formatString}" \
+			"${colorLocal}" \
+			"${characterLocal}" \
+			"${colorReset}"
+	fi
+}
+
+generateStatusIdentity()
+{
+	local color="$(tput setaf 13)"
+	local colorReset="$(tput sgr0)"
+
+	local formatString='\001%s\002%s\001%s\002'
+
+	local identity="$(id --user --name)"
+
+	if [[ ${identity} == ${ERICPREF_LOCALUSER} ]]
+	then
+		# Print nothing
+		:
+	else
+		printf "${formatString}" \
+			"${color}" \
+			"${identity}"'@' \
+			"${colorReset}"
+	fi
+}
+
+generateStatusGit()
+{
+	local colorCommitted="$(tput setaf 10)"
+	local colorUncommitted="$(tput setaf 9)"
+	local colorReset="$(tput sgr0)"
+
+	local characterCommitted='✓'
+	local characterUncommitted='∆'
+
+	local formatString='\001%s\002%s\001%s\002'
+
+	# Check to see if git exists and we're in a repo
+	if which git >/dev/null 2>&1 && \
+		git rev-parse --git-dir >/dev/null 2>&1
+	then
+		# Check to see whether there are uncommitted changes
+		if git diff --exit-code &>/dev/null 2>&1 && \
+			git diff --cached --exit-code >/dev/null 2>&1
+		then
+			printf "${formatString}" \
+				"${colorCommitted}" \
+				'('"${characterCommitted}"') ' \
+				"${colorReset}"
+		else
+			printf "${formatString}" \
+				"${colorUncommitted}" \
+				'('"${characterUncommitted}"') ' \
+				"${colorReset}"
+		fi
+	else
+		# Print nothing if no git
+		:
+	fi
+}
+
+generatePromptString()
+{
+	# Use argument to generate PS1, PS2, etc
+	local promptString="$1"
+	local hostname="$(hostname | tr --delete '\n')"
+	local basedir="$(basename $(pwd))"
+
+	local formatString='%s %s%s %s» '
+
+	# Prepare the base string
+	case "${promptString}" in
+		PS1)
+			printf "${formatString}" \
+				"$(generateStatusNetwork)" \
+				"$(generateStatusIdentity)" \
+				"${hostname}" \
+				"$(generateStatusGit)"
+			;;
+		PS2)
+			printf ' » '
+			;;
+		*)
+			# Do nothing
+			:
+			;;
+	esac
+}
+
+PS1='$(generatePromptString PS1)'
+PS2='$(generatePromptString PS2)'
