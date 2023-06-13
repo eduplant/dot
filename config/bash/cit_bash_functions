@@ -1,0 +1,17 @@
+# Binocular telnet wrapper
+function bintel ()
+{
+	ssh -t binocular "telnet $@"
+}
+
+# Binocular ping wrapper
+function binping ()
+{
+	ssh -t binocular "ping $@"
+}
+
+# Binocular dig wrapper
+function bindig ()
+{
+	ssh -t binocular "dig $@"
+}

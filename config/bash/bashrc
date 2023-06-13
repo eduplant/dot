@@ -27,6 +27,18 @@ then
 	source "${ERICPREF_COMMON_BASHRC}"
 fi
 
+# If a bash_aliases file exists, use it.
+if [ -f ~/'.bash_aliases' ]
+then
+    source ~/'.bash_aliases'
+fi
+
+# If a bash_functions file exists, use it.
+if [ -f ~/'.bash_functions' ]
+then
+    . ~/'.bash_functions'
+fi
+
 # In the event that some preferences need to be overridden or suppressed on this
 # specific machine, redefine them in the appropriate file.
 if [ -f "${ERICPREF_LOCAL_OVERRIDES}" ]

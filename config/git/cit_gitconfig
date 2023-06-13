@@ -1,0 +1,5 @@
+[user]
+	name = Eric Duplantis
+	email = eduplant@caltech.edu
+[init]
+	defaultBranch = main
