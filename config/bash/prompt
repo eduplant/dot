@@ -55,7 +55,72 @@ generateStatusGit()
 	local characterCommitted='✓'
 	local characterUncommitted='∆'
 
+<<<<<<< Updated upstream
 	local formatString='\001%s\002%s\001%s\002'
+=======
+	if git diff --exit-code &>/dev/null 2>&1 && \
+		git diff --cached --exit-code >/dev/null 2>&1 && \
+		git ls-files --exclude-standard --others 2>&1
+	then
+		printf '\001%s\002%s\001%s\002' \
+			"${colorOK}" \
+			"${characterCommitted}" \
+			"${colorReset}"
+	else
+		printf '\001%s\002%s\001%s\002' \
+			"${colorNotOK}" \
+			"${characterUncommitted}" \
+			"${colorReset}"
+	fi
+}
+
+generateGitAheadBehindRemote()
+{
+	local colorOK="$(tput setaf 10)"
+	local colorNotOK="$(tput setaf 9)"
+	local colorReset="$(tput sgr0)"
+
+	local characterAhead='↖'
+	local characterBehind='↙'
+
+	local remoteTracked="$(git for-each-ref --format='%(upstream:short)' "$(git symbolic-ref -q HEAD)")"
+	local gitAheadBehindRaw=$(git rev-list --left-right --count \
+		"${remoteTracked}"...$(git branch --show-current) \
+		2>/dev/null)
+	local gitAhead=$(printf '%s' "${gitAheadBehindRaw}" | \
+		cut -d $'\t' -f 2)
+	local gitBehind=$(printf '%s' "${gitAheadBehindRaw}" | \
+		cut -d $'\t' -f 1)
+
+	if [ "${gitAhead:-0}" -gt 0 ]
+	then
+		printf '\001%s\002%s%s\001%s\002' \
+			"${colorNotOK}" \
+			"${characterAhead}" \
+			"${gitAhead}" \
+			"${colorReset}"
+	else
+		# Print nothing if not ahead
+		:
+	fi
+
+	if [ "${gitBehind:-0}" -gt 0 ]
+	then
+		printf '\001%s\002%s%s\001%s\002' \
+			"${colorNotOK}" \
+			"${characterBehind}" \
+			"${gitBehind}" \
+			"${colorReset}"
+	else
+		# Print nothing if not behind
+		:
+	fi
+}
+
+generateStatusGit()
+{
+	local formatString='(%s%s) '
+>>>>>>> Stashed changes
 
 	# Check to see if git exists and we're in a repo
 	if which git >/dev/null 2>&1 && \
