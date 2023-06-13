@@ -80,8 +80,9 @@ generateGitAheadBehindRemote()
 	local characterAhead='↖'
 	local characterBehind='↙'
 
+	local remoteTracked="$(git for-each-ref --format='%(upstream:short)' "$(git symbolic-ref -q HEAD)")"
 	local gitAheadBehindRaw=$(git rev-list --left-right --count \
-		github/$(git branch --show-current)..$(git branch --show-current) \
+		"${remoteTracked}"...$(git branch --show-current) \
 		2>/dev/null)
 	local gitAhead=$(printf '%s' "${gitAheadBehindRaw}" | \
 		cut -d $'\t' -f 2)
