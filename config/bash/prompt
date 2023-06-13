@@ -46,18 +46,15 @@ generateStatusIdentity()
 	fi
 }
 
-generateStatusGit()
+generateGitCommitted()
 {
-	local colorCommitted="$(tput setaf 10)"
-	local colorUncommitted="$(tput setaf 9)"
+	local colorOK="$(tput setaf 10)"
+	local colorNotOK="$(tput setaf 9)"
 	local colorReset="$(tput sgr0)"
 
 	local characterCommitted='✓'
 	local characterUncommitted='∆'
 
-<<<<<<< Updated upstream
-	local formatString='\001%s\002%s\001%s\002'
-=======
 	if git diff --exit-code &>/dev/null 2>&1 && \
 		git diff --cached --exit-code >/dev/null 2>&1 && \
 		git ls-files --exclude-standard --others 2>&1
@@ -83,9 +80,8 @@ generateGitAheadBehindRemote()
 	local characterAhead='↖'
 	local characterBehind='↙'
 
-	local remoteTracked="$(git for-each-ref --format='%(upstream:short)' "$(git symbolic-ref -q HEAD)")"
 	local gitAheadBehindRaw=$(git rev-list --left-right --count \
-		"${remoteTracked}"...$(git branch --show-current) \
+		github/$(git branch --show-current)..$(git branch --show-current) \
 		2>/dev/null)
 	local gitAhead=$(printf '%s' "${gitAheadBehindRaw}" | \
 		cut -d $'\t' -f 2)
@@ -120,25 +116,23 @@ generateGitAheadBehindRemote()
 generateStatusGit()
 {
 	local formatString='(%s%s) '
->>>>>>> Stashed changes
 
 	# Check to see if git exists and we're in a repo
 	if which git >/dev/null 2>&1 && \
 		git rev-parse --git-dir >/dev/null 2>&1
 	then
-		# Check to see whether there are uncommitted changes
-		if git diff --exit-code &>/dev/null 2>&1 && \
-			git diff --cached --exit-code >/dev/null 2>&1
+		local comm="$(generateGitCommitted)"
+		local abr="$(generateGitAheadBehindRemote)"
+
+		if [ "${abr}" != '' ]
 		then
 			printf "${formatString}" \
-				"${colorCommitted}" \
-				'('"${characterCommitted}"') ' \
-				"${colorReset}"
+				"${comm}" \
+				' '"${abr}"
 		else
 			printf "${formatString}" \
-				"${colorUncommitted}" \
-				'('"${characterUncommitted}"') ' \
-				"${colorReset}"
+				"${comm}" \
+				''
 		fi
 	else
 		# Print nothing if no git
