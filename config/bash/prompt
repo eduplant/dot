@@ -143,6 +143,16 @@ generateStatusGit()
 
 generatePromptString()
 {
+	if [ "${ERICPREF_ACCENT_COLOR_TERM}" ]
+	then
+		local accentColor="${ERICPREF_ACCENT_COLOR_TERM}"
+	else
+		local accentColor="$(tput sgr0)"
+	fi
+	local colorReset="$(tput sgr0)"
+
+	#printf 'accentColor: \001%s\002test\001%s\002\n' "${accentColor}" "${colorReset}"
+
 	# Use argument to generate PS1, PS2, etc
 	local promptString="$1"
 	if [ "${ERICPREF_HOSTNAME}" ]
@@ -153,7 +163,7 @@ generatePromptString()
 	fi
 	local basedir="$(basename $(pwd))"
 
-	local formatString='%s %s%s %s» '
+	local formatString='%s %s\001%s\002%s\001%s\002 %s\001%s\002»\001%s\002 '
 
 	# Prepare the base string
 	case "${promptString}" in
@@ -161,11 +171,17 @@ generatePromptString()
 			printf "${formatString}" \
 				"$(generateStatusNetwork)" \
 				"$(generateStatusIdentity)" \
+				"${accentColor}" \
 				"${hostname}" \
-				"$(generateStatusGit)"
+				"${colorReset}" \
+				"$(generateStatusGit)" \
+				"${accentColor}" \
+				"${colorReset}"
 			;;
 		PS2)
-			printf ' » '
+			printf ' \001%s\002»\001%s\002 ' \
+				"${accentColor}" \
+				"${colorReset}"
 			;;
 		*)
 			# Do nothing
