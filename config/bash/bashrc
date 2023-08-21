@@ -14,6 +14,7 @@ export ERICPREF_LOCAL_OVERRIDES="${XDG_CONFIG_HOME}"'/bash/override_bashrc'
 export ERICPREF_PROMPT="${XDG_CONFIG_HOME}"'/bash/prompt'
 export ERICPREF_LOCALUSER='eduplant'
 export ERICPREF_MAIN_TMUX_SESSION='main'
+export ERICPREF_SSH_AGENT_SOCKET=~/.ssh/sock-ssh-agent
 
 # Custom sudo-related aliases
 alias sudo='sudo --preserve-env=ERICPREF_COMMON_BASHRC'
@@ -50,6 +51,19 @@ fi
 if [ -f "${ERICPREF_PROMPT}" ]
 then
 	source "${ERICPREF_PROMPT}"
+fi
+
+# Check to see if an SSH agent is running and start one if not
+if [ -S "${ERICPREF_SSH_AGENT_SOCKET}" ]
+then
+	# Agent is already running, just set environment variable
+	export SSH_AUTH_SOCK="${ERICPREF_SSH_AGENT_SOCKET}"
+else
+	printf 'SSH agent does not appear to be running at %s...\n' \
+		"${ERICPREF_SSH_AGENT_SOCKET}"
+	ssh-agent -a "${ERICPREF_SSH_AGENT_SOCKET}"
+	export SSH_AUTH_SOCK="${ERICPREF_SSH_AGENT_SOCKET}"
+	ssh-add
 fi
 
 # Try and reattach the main tmux session on each new interactive shell
