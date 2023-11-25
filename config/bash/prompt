@@ -178,9 +178,6 @@ generatePromptString()
 				"$(generateStatusIdentity)" \
 				"${accentColor}" \
 				"${hostname}" \
-				"${colorReset}" \
-				"$(generateStatusGit)" \
-				"${accentColor}" \
 				"${colorReset}"
 			;;
 		PS2)
