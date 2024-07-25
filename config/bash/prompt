@@ -161,7 +161,8 @@ generatePromptString()
 	else
 		local hostname="$(hostname -s | tr -d '\n')"
 	fi
-	local basedir="$(basename $(pwd))"
+	local pwd="$(pwd)"
+	local basedir=$(basename "$pwd")
 
 	local formatString='%s %s\001%s\002%s\001%s\002 %s\001%s\002»\001%s\002 '
 

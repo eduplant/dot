@@ -15,6 +15,8 @@ export ERICPREF_PROMPT="${XDG_CONFIG_HOME}"'/bash/prompt'
 export ERICPREF_LOCALUSER='eduplant'
 export ERICPREF_MAIN_TMUX_SESSION='main'
 export ERICPREF_SSH_AGENT_SOCKET=~/.ssh/sock-ssh-agent
+export ERICPREF_CF_AUTH_FIFO_IN=~/.cfauth.in
+export ERICPREF_CF_AUTH_FIFO_OUT=~/.cfauth.out
 
 # Custom sudo-related aliases
 alias sudo='sudo --preserve-env=ERICPREF_COMMON_BASHRC'
